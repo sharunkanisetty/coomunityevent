@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Dashboard</title>
+</head>
+<body>
+    <div id="content">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h1 class="display-4">Welcome, <span th:text="${user.fullName}">User</span>!</h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- User Stats Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Stats</h5>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Points
+                                    <span class="badge bg-primary rounded-pill" th:text="${user.points}">0</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Volunteer Hours
+                                    <span class="badge bg-success rounded-pill" th:text="${totalVolunteerHours}">0</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Badges
+                                    <span class="badge bg-info rounded-pill" th:text="${badges.size()}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Badges</h5>
+                            <div class="row g-2" th:if="${!badges.empty}">
+                                <div class="col-4" th:each="badge : ${badges}">
+                                    <div class="badge-item text-center">
+                                        <i class="bi bi-award text-warning fs-2"></i>
+                                        <div class="small" th:text="${badge.name}">Badge Name</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted" th:if="${badges.empty}">No badges earned yet. Start participating to earn badges!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Quick Actions</h5>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/events}" class="btn btn-primary">
+                                    <i class="bi bi-calendar-event"></i> Browse Events
+                                </a>
+                                <a th:href="@{/volunteer}" class="btn btn-success">
+                                    <i class="bi bi-heart"></i> Volunteer Opportunities
+                                </a>
+                                <a th:href="@{/carbon-footprint}" class="btn btn-info">
+                                    <i class="bi bi-leaf"></i> Calculate Carbon Footprint
+                                </a>
+                                <a th:href="@{/rewards}" class="btn btn-warning">
+                                    <i class="bi bi-gift"></i> View Rewards
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Activity</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Activity</th>
+                                            <th>Points</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Add activity rows here when implementing activity tracking -->
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">No recent activity</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .badge-item {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            background-color: rgba(0,0,0,0.05);
+        }
+    </style>
+</body>
+</html> 

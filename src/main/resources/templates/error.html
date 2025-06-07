@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Error</title>
+</head>
+<body>
+    <div id="content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-body text-center">
+                            <h1 class="display-1 text-danger mb-4" th:text="${status}">500</h1>
+                            <h2 class="mb-4" th:text="${error}">Internal Server Error</h2>
+                            <p class="lead mb-4" th:text="${message}">Something went wrong.</p>
+                            <a href="/" class="btn btn-primary">
+                                <i class="bi bi-house-door"></i> Return Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>My Badges</title>
+    <style>
+        .badge-card {
+            transition: transform 0.2s;
+        }
+        .badge-card:hover {
+            transform: scale(1.05);
+        }
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2>My Badges</h2>
+                <p class="text-muted">Track your environmental impact and achievements</p>
+            </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="display-4 text-success" th:text="${totalVolunteerHours}">0</h3>
+                        <p class="text-muted">Total Volunteer Hours</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="display-4 text-primary" th:text="${#lists.size(userBadges)}">0</h3>
+                        <p class="text-muted">Badges Earned</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="display-4 text-info">Level</h3>
+                        <p class="text-muted" th:text="${totalVolunteerHours < 10 ? 'Beginner' : totalVolunteerHours < 50 ? 'Intermediate' : 'Expert'}">Level</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Grid -->
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="badge : ${userBadges}">
+                <div class="card h-100 badge-card">
+                    <div class="card-body text-center">
+                        <div class="badge-icon" th:class="${'text-' + badge.color}">
+                            <i th:class="${'bi bi-' + badge.icon}"></i>
+                        </div>
+                        <h5 class="card-title" th:text="${badge.name}">Badge Name</h5>
+                        <p class="card-text" th:text="${badge.description}">Badge Description</p>
+                        <small class="text-muted" th:text="${'Earned on ' + #temporals.format(badge.earnedDate, 'dd MMM yyyy')}">Earned Date</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Achievements -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Next Achievements</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6>Green Warrior</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         th:style="'width: ' + ${(totalVolunteerHours * 100) / 50} + '%'"
+                                         th:text="${totalVolunteerHours + '/50 hours'}">Progress</div>
+                                </div>
+                                <small class="text-muted">Complete 50 volunteer hours</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6>Event Master</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                         th:style="'width: ' + ${(#lists.size(userBadges) * 100) / 10} + '%'"
+                                         th:text="${#lists.size(userBadges) + '/10 badges'}">Progress</div>
+                                </div>
+                                <small class="text-muted">Earn 10 different badges</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Event Details</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Event Details -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title" th:text="${event.title}">Event Title</h2>
+                        <div class="badge bg-primary me-2" th:text="${event.eventType}">Event Type</div>
+                        <div class="badge bg-info" th:text="${#temporals.format(event.date, 'dd MMM yyyy')}">Date</div>
+                        
+                        <hr>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>Details</h5>
+                                <p th:text="${event.description}">Description</p>
+                                <p><strong>Location:</strong> <span th:text="${event.location}">Location</span></p>
+                                <p><strong>Duration:</strong> <span th:text="${event.durationInHours}">0</span> hours</p>
+                                <p><strong>Participants:</strong> <span th:text="${totalParticipants}">0</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="map" style="height: 300px;" class="rounded"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5>Organizer</h5>
+                            <p th:text="${event.organizer.name}">Organizer Name</p>
+                        </div>
+
+                        <div class="mt-4" th:if="${not #lists.isEmpty(event.participants)}">
+                            <h5>Participants</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-2" th:each="participant : ${event.participants}">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title" th:text="${participant.name}">Participant Name</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <!-- Action Buttons -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form th:action="@{'/events/' + ${event.id} + '/join'}" method="post" class="mb-2">
+                            <button type="submit" class="btn btn-primary w-100">Join Event</button>
+                        </form>
+                        <a th:href="@{'/events/' + ${event.id} + '/share'}" class="btn btn-outline-primary w-100">Share Event</a>
+                    </div>
+                </div>
+
+                <!-- Carbon Footprint Widget -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Environmental Impact</h5>
+                        <div class="text-center mb-3">
+                            <div class="display-4 text-success" th:text="${#numbers.formatDecimal(carbonFootprint, 1, 1)} + ' kg'">0.0 kg</div>
+                            <small class="text-muted">Estimated CO₂ Impact</small>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 th:style="'width: ' + ${carbonFootprint < 150 ? '33' : carbonFootprint < 300 ? '66' : '100'} + '%'"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">
+                            This is an estimated carbon footprint based on event type and number of participants.
+                            <span th:if="${event.eventType.name() == 'PLANTING'}" class="text-success">
+                                Tree planting events help offset carbon emissions!
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript" layout:fragment="script">
+    document.addEventListener('DOMContentLoaded', function() {
+        const event = /*[[${event}]]*/ {};
+        
+        mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN'; // Replace with your Mapbox token
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [event.longitude, event.latitude],
+            zoom: 13
+        });
+
+        new mapboxgl.Marker()
+            .setLngLat([event.longitude, event.latitude])
+            .addTo(map);
+    });
+</script>
+</body>
+</html> 

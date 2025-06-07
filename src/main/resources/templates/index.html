@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Home</title>
+</head>
+<body>
+    <div id="content">
+        <div class="jumbotron bg-light p-5 rounded-3">
+            <h1 class="display-4">Welcome to Community Events</h1>
+            <p class="lead">Join us in making our community a better place through volunteering and participation.</p>
+            <hr class="my-4">
+            <p>Discover upcoming events, join activities, and connect with fellow community members.</p>
+            <a class="btn btn-primary btn-lg" th:href="@{/events}" role="button">Browse Events</a>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-8">
+                <h2>Upcoming Events</h2>
+                <div class="row">
+                    <div class="col-md-6 mb-4" th:each="event : ${upcomingEvents}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="bi bi-calendar"></i>
+                                    <span th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                </h6>
+                                <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary" th:text="${event.eventType}">Type</span>
+                                    <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Links</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a th:href="@{/events/new}" class="text-decoration-none">
+                                    <i class="bi bi-plus-circle"></i> Create New Event
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a th:href="@{/dashboard}" class="text-decoration-none">
+                                    <i class="bi bi-speedometer2"></i> My Dashboard
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a th:href="@{/profile}" class="text-decoration-none">
+                                    <i class="bi bi-person"></i> My Profile
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

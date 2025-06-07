@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle" th:text="${event.id} ? 'Edit Event' : 'Create Event'">Event Form</title>
+</head>
+<body>
+    <div id="content">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/events}">Events</a></li>
+                <li class="breadcrumb-item active" th:text="${event.id} ? 'Edit Event' : 'Create Event'">Event Form</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title mb-4" th:text="${event.id} ? 'Edit Event' : 'Create Event'">Event Form</h1>
+
+                        <form th:action="@{/events}" th:object="${event}" method="post">
+                            <input type="hidden" th:field="*{id}">
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4" required></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="dateTime" class="form-label">Date and Time</label>
+                                    <input type="datetime-local" class="form-control" id="dateTime" th:field="*{dateTime}" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="type" class="form-label">Event Type</label>
+                                    <select class="form-select" id="type" th:field="*{type}" required>
+                                        <option value="">Select Type</option>
+                                        <option th:each="type : ${T(com.community.model.Event.EventType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type}">Type</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" step="any" class="form-control" id="latitude" th:field="*{latitude}">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" step="any" class="form-control" id="longitude" th:field="*{longitude}">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="maxParticipants" class="form-label">Maximum Participants</label>
+                                <input type="number" class="form-control" id="maxParticipants" th:field="*{maxParticipants}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('maxParticipants')}" th:errors="*{maxParticipants}"></div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/events}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i>
+                                    <span th:text="${event.id} ? 'Update Event' : 'Create Event'">Submit</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add map picker functionality here if needed
+    </script>
+</body>
+</html> 

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Carbon Footprint Calculator</title>
+</head>
+<body>
+    <div id="content">
+        <div class="container">
+            <!-- Success Message -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${successMessage}">Success</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${errorMessage}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Calculate Your Carbon Footprint</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/carbon-footprint/calculate}" method="post" th:object="${footprint}">
+                                <!-- Transportation Section -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Transportation</h6>
+                                    <div class="alert alert-info small">
+                                        Enter details per trip (e.g., your daily commute, a specific journey, etc.)
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mode of Transport</label>
+                                        <select class="form-select" th:field="*{transportationType}">
+                                            <option value="CAR">Car</option>
+                                            <option value="PUBLIC_TRANSPORT">Public Transport</option>
+                                            <option value="BICYCLE">Bicycle</option>
+                                            <option value="WALK">Walk</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Distance Traveled (km)</label>
+                                        <input type="number" class="form-control" th:field="*{distanceTraveled}" step="0.1" min="0" />
+                                        <small class="text-muted">Enter the distance for a single trip</small>
+                                    </div>
+                                </div>
+
+                                <!-- Measurement Period -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Measurement Period</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Period</label>
+                                        <select class="form-select" th:field="*{measurementPeriod}">
+                                            <option th:each="period : ${T(com.community.model.CarbonFootprint.MeasurementPeriod).values()}"
+                                                    th:value="${period}"
+                                                    th:text="${period.displayName}">Period</option>
+                                        </select>
+                                        <small class="text-muted">Choose whether this is a daily, weekly, or monthly measurement</small>
+                                    </div>
+                                </div>
+
+                                <!-- Energy Consumption Section -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Energy Consumption</h6>
+                                    <div class="alert alert-info small">
+                                        Enter your electricity consumption based on the selected period above.
+                                        Monthly values come from your utility bill. For daily, divide by 30. For weekly, divide by 4.
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Energy Used (kWh)</label>
+                                        <input type="number" class="form-control" th:field="*{energyConsumption}" step="0.1" min="0" />
+                                        <small class="text-muted">Energy consumption for the selected period</small>
+                                    </div>
+                                </div>
+
+                                <!-- Waste Generation Section -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Waste Generation</h6>
+                                    <div class="alert alert-info small">
+                                        Enter your waste generation based on the selected period above.
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Waste Generated (kg)</label>
+                                        <input type="number" class="form-control" th:field="*{wasteGenerated}" step="0.1" min="0" />
+                                        <small class="text-muted">Total waste for the selected period</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Calculate Impact</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Impact Summary</h5>
+                            <div class="text-center mb-3">
+                                <div class="display-4 text-success" th:text="${#numbers.formatDecimal(totalOffset != null ? totalOffset : 0, 1, 1)} + ' kg'">0.0 kg</div>
+                                <small class="text-muted">Total CO₂ Offset</small>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     th:style="'width: ' + ${totalOffset != null ? (totalOffset < 150 ? '33' : totalOffset < 300 ? '66' : '100') : '0'} + '%'"
+                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted">
+                                Your carbon footprint helps us understand your environmental impact. 
+                                Participate in more eco-friendly events to offset your carbon footprint!
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Recent Calculations -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Calculations</h5>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div th:each="footprint : ${userFootprints}" class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1" th:text="${#temporals.format(footprint.calculationDate, 'MMM dd, yyyy')}">Date</h6>
+                                    <span class="text-success" th:text="${#numbers.formatDecimal(footprint.totalCarbonOffset, 1, 1)} + ' kg'">0.0 kg</span>
+                                </div>
+                                <p class="mb-1">
+                                    <span th:if="${footprint.transportationType}" th:text="${footprint.transportationType.toLowerCase().replace('_', ' ')}">Transport</span>
+                                    <span th:if="${footprint.distanceTraveled}" th:text="'- ' + ${footprint.distanceTraveled} + ' km'"></span>
+                                </p>
+                            </div>
+                            <div th:if="${#lists.isEmpty(userFootprints)}" class="list-group-item text-center">
+                                No calculations yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

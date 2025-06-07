@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>My Events</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <h2 class="mb-4">My Events</h2>
+        
+        <!-- Events I'm Participating In -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Events I'm Participating In</h3>
+            </div>
+            <div class="card-body">
+                <div class="row" th:if="${not #lists.isEmpty(participatingEvents)}">
+                    <div class="col-md-4 mb-3" th:each="event : ${participatingEvents}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                                <p class="card-text" th:text="${event.description}">Description</p>
+                                <p class="card-text">
+                                    <small class="text-muted" th:text="${#temporals.format(event.date, 'dd MMM yyyy')}">Date</small>
+                                </p>
+                                <a th:href="@{'/events/' + ${event.id}}" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p th:if="${#lists.isEmpty(participatingEvents)}" class="text-muted">
+                    You are not participating in any events yet.
+                </p>
+            </div>
+        </div>
+
+        <!-- Events I'm Organizing -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Events I'm Organizing</h3>
+            </div>
+            <div class="card-body">
+                <div class="row" th:if="${not #lists.isEmpty(organizedEvents)}">
+                    <div class="col-md-4 mb-3" th:each="event : ${organizedEvents}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                                <p class="card-text" th:text="${event.description}">Description</p>
+                                <p class="card-text">
+                                    <small class="text-muted" th:text="${#temporals.format(event.date, 'dd MMM yyyy')}">Date</small>
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{'/events/' + ${event.id}}" class="btn btn-primary">View Details</a>
+                                    <a th:href="@{'/events/edit/' + ${event.id}}" class="btn btn-secondary">Edit</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p th:if="${#lists.isEmpty(organizedEvents)}" class="text-muted">
+                    You haven't organized any events yet.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

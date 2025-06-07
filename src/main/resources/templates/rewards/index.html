@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Rewards</title>
+</head>
+<body>
+    <div id="content">
+        <div class="container">
+            <h2 class="mb-4">My Rewards</h2>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Points Balance</h5>
+                            <h2 class="text-success" th:text="${#authentication.principal.points}">0</h2>
+                            <p class="text-muted">Available points to redeem</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Available Rewards -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Available Rewards</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Reward</th>
+                                            <th>Points Required</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="reward : ${availableRewards}">
+                                            <td>
+                                                <strong th:text="${reward.rewardName}">Reward Name</strong>
+                                                <p class="text-muted mb-0" th:text="${reward.description}">Description</p>
+                                            </td>
+                                            <td th:text="${reward.pointsCost}">100</td>
+                                            <td>
+                                                <form th:action="@{/rewards/redeem}" method="post" class="d-inline">
+                                                    <input type="hidden" name="rewardId" th:value="${reward.id}" />
+                                                    <button type="submit" class="btn btn-primary btn-sm"
+                                                            th:disabled="${#authentication.principal.points < reward.pointsCost}">
+                                                        Redeem
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(availableRewards)}">
+                                            <td colspan="3" class="text-center">No rewards available at the moment.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redeemed Rewards History -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Redemption History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <div th:each="redeemedReward : ${redeemedRewards}" 
+                                     class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1" th:text="${redeemedReward.rewardName}">Reward Name</h6>
+                                        <small th:text="${#temporals.format(redeemedReward.redeemDate, 'MMM dd, yyyy')}">
+                                            Date
+                                        </small>
+                                    </div>
+                                    <p class="mb-1" th:text="${redeemedReward.description}">Description</p>
+                                    <small th:text="${redeemedReward.rewardCode}" class="text-muted">Code</small>
+                                </div>
+                                <div th:if="${#lists.isEmpty(redeemedRewards)}" 
+                                     class="list-group-item text-center">
+                                    No redemption history.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

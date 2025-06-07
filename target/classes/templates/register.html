@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title id="pageTitle">Register</title>
+</head>
+<body>
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center mb-0">Register</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            Registration failed. Please try again.
+                        </div>
+                        <div th:if="${param.success}" class="alert alert-success">
+                            Registration successful! Please login.
+                        </div>
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+                        </div>
+
+                        <form th:action="@{/register}" method="post" class="needs-validation" novalidate th:object="${user}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" th:field="*{username}" required 
+                                       minlength="3" maxlength="50">
+                                <div class="invalid-feedback">Username must be between 3 and 50 characters.</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
+                                <div class="invalid-feedback">Please enter your full name.</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <div class="invalid-feedback">Please provide a valid email address.</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                           required minlength="6">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">Password must be at least 6 characters long.</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">Passwords do not match.</div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-person-plus"></i> Register
+                                </button>
+                                <a th:href="@{/login}" class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-in-right"></i> Already have an account? Login
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation
+        (function() {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    // Check if passwords match
+                    const password = form.querySelector('#password');
+                    const confirmPassword = form.querySelector('#confirmPassword');
+                    if (password.value !== confirmPassword.value) {
+                        confirmPassword.setCustomValidity('Passwords do not match');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else {
+                        confirmPassword.setCustomValidity('');
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Password visibility toggle
+            document.getElementById('togglePassword').addEventListener('click', function() {
+                const password = document.getElementById('password');
+                const icon = this.querySelector('i');
+                if (password.type === 'password') {
+                    password.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    password.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+
+            document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+                const password = document.getElementById('confirmPassword');
+                const icon = this.querySelector('i');
+                if (password.type === 'password') {
+                    password.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    password.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        })();
+    </script>
+</body>
+</html> 
