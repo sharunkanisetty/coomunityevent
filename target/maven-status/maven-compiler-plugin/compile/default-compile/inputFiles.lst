@@ -25,6 +25,7 @@
 /home/sharun/spring/src/main/java/com/community/model/RedeemReward.java
 /home/sharun/spring/src/main/java/com/community/service/impl/EventServiceImpl.java
 /home/sharun/spring/src/main/java/com/community/repository/VolunteerHoursRepository.java
+/home/sharun/spring/src/main/java/com/community/controller/web/EventWebController.java
 /home/sharun/spring/src/main/java/com/community/service/RedeemRewardService.java
 /home/sharun/spring/src/main/java/com/community/exception/GlobalExceptionHandler.java
 /home/sharun/spring/src/main/java/com/community/controller/DashboardController.java

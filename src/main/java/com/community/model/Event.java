@@ -39,6 +39,9 @@ public class Event {
     @Column(name = "event_type")
     private EventType eventType;
 
+    @Column(name = "max_participants")
+    private Integer maxParticipants;
+
     @ManyToOne
     @JoinColumn(name = "organizer_id")
     private User organizer;

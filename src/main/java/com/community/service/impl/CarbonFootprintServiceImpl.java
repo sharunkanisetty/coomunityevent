@@ -9,7 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,27 +56,58 @@ public class CarbonFootprintServiceImpl implements CarbonFootprintService {
         );
         footprint.setTotalCarbonOffset(totalOffset);
 
+        // Ensure event is null if not provided
+        if (footprint.getEvent() != null && footprint.getEvent().getId() == null) {
+            footprint.setEvent(null);
+        }
+
         return carbonFootprintRepository.save(footprint);
     }
 
-    private double calculateTotalOffset(double transportEmissions, double energyConsumption, 
-                                     double wasteGenerated, CarbonFootprint.MeasurementPeriod period) {
-        // Base calculation
-        double totalOffset = transportEmissions +
-                           (energyConsumption * 0.5) + // 0.5 kg CO2 per kWh
-                           (wasteGenerated * 2.0);     // 2 kg CO2 per kg waste
-
-        // Adjust based on period
-        switch (period) {
-            case DAILY:
-                return totalOffset; // Daily is our base calculation
-            case WEEKLY:
-                return totalOffset / 7.0; // Convert to daily average
-            case MONTHLY:
-                return totalOffset / 30.0; // Convert to daily average
-            default:
-                return totalOffset;
+    @Override
+    public Map<String, Object> getUserFootprintsWithDateRange(User user, CarbonFootprint.MeasurementPeriod period) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
         }
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate;
+        String dateRangeDisplay;
+
+        if (period == null) {
+            period = CarbonFootprint.MeasurementPeriod.DAILY;
+        }
+
+        switch (period) {
+            case WEEKLY:
+                startDate = now.minusDays(7);
+                DateTimeFormatter weekFormatter = DateTimeFormatter.ofPattern("MMM dd");
+                dateRangeDisplay = startDate.format(weekFormatter) + " - " + now.format(weekFormatter);
+                break;
+            case MONTHLY:
+                startDate = now.minusMonths(1);
+                DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+                dateRangeDisplay = startDate.format(monthFormatter);
+                break;
+            default: // DAILY
+                startDate = now.minusDays(1);
+                DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+                dateRangeDisplay = now.format(dayFormatter);
+                break;
+        }
+
+        List<CarbonFootprint> footprints = carbonFootprintRepository
+            .findByUserAndCalculationDateBetweenOrderByCalculationDateDesc(user, startDate, now);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("footprints", footprints);
+        response.put("dateRange", dateRangeDisplay);
+        response.put("period", period);
+        response.put("totalOffset", footprints.stream()
+            .mapToDouble(CarbonFootprint::getTotalCarbonOffset)
+            .sum());
+
+        return response;
     }
 
     @Override
@@ -117,6 +153,21 @@ public class CarbonFootprintServiceImpl implements CarbonFootprintService {
         carbonFootprintRepository.deleteById(id);
     }
 
+    @Override
+    public double calculateEventFootprint(Event event) {
+        if (event == null) {
+            throw new IllegalArgumentException("Event cannot be null");
+        }
+        
+        // Get all footprints associated with this event
+        List<CarbonFootprint> eventFootprints = carbonFootprintRepository.findByEvent(event);
+        
+        // Calculate total carbon offset from all footprints
+        return eventFootprints.stream()
+                .mapToDouble(CarbonFootprint::getTotalCarbonOffset)
+                .sum();
+    }
+
     private double calculateTransportEmissions(String transportType, Double distance) {
         if (distance == null || distance < 0) {
             return 0.0;
@@ -129,5 +180,25 @@ public class CarbonFootprintServiceImpl implements CarbonFootprintService {
             case "BICYCLE", "WALK" -> 0.0; // No emissions
             default -> distance * 0.15; // Default average
         };
+    }
+
+    private double calculateTotalOffset(double transportEmissions, double energyConsumption, 
+                                     double wasteGenerated, CarbonFootprint.MeasurementPeriod period) {
+        // Base calculation
+        double totalOffset = transportEmissions +
+                           (energyConsumption * 0.5) + // 0.5 kg CO2 per kWh
+                           (wasteGenerated * 2.0);     // 2 kg CO2 per kg waste
+
+        // Adjust based on period
+        switch (period) {
+            case DAILY:
+                return totalOffset; // Daily is our base calculation
+            case WEEKLY:
+                return totalOffset / 7.0; // Convert to daily average
+            case MONTHLY:
+                return totalOffset / 30.0; // Convert to daily average
+            default:
+                return totalOffset;
+        }
     }
 } 

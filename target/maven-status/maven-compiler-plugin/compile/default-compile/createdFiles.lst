@@ -2,7 +2,6 @@ com/community/controller/WebController.class
 com/community/security/CustomUserDetails.class
 com/community/model/RedeemReward.class
 com/community/repository/UserRepository.class
-com/community/controller/WebController$1.class
 com/community/dto/ApiResponse.class
 com/community/model/CarbonFootprint.class
 com/community/repository/BadgeRepository.class
@@ -20,6 +19,7 @@ com/community/controller/DashboardController.class
 com/community/controller/UserController.class
 com/community/service/RedeemRewardService.class
 com/community/model/ForumPost.class
+com/community/controller/web/EventWebController.class
 com/community/config/WebConfig.class
 com/community/repository/ForumRepository.class
 com/community/model/Event$EventType.class

@@ -13,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/carbon-footprint")
 @RequiredArgsConstructor
@@ -67,11 +69,20 @@ public class CarbonFootprintWebController {
     }
 
     @GetMapping("/history")
-    public String showHistory(Model model) {
+    public String showHistory(
+            @RequestParam(required = false) CarbonFootprint.MeasurementPeriod period,
+            Model model) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userService.findByUsername(auth.getName());
-            model.addAttribute("footprints", carbonFootprintService.getUserFootprints(user));
+            
+            Map<String, Object> data = carbonFootprintService.getUserFootprintsWithDateRange(user, period);
+            
+            model.addAttribute("footprints", data.get("footprints"));
+            model.addAttribute("dateRange", data.get("dateRange"));
+            model.addAttribute("period", data.get("period"));
+            model.addAttribute("totalOffset", data.get("totalOffset"));
+            
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error loading history: " + e.getMessage());
         }

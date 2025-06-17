@@ -17,6 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByParticipantsContaining(User user);
     List<Event> findByOrganizer(User user);
     List<Event> findByLocationContainingIgnoreCase(String location);
+    List<Event> findByEventTypeAndLocationContainingIgnoreCase(Event.EventType type, String location);
 
     @Query("SELECT e FROM Event e WHERE (:type IS NULL OR e.eventType = :type) AND (:location IS NULL OR LOWER(e.location) LIKE LOWER(CONCAT('%', :location, '%'))) AND e.date > :date ORDER BY e.date")
     List<Event> searchEvents(@Param("type") Event.EventType type, @Param("location") String location, @Param("date") LocalDateTime date);

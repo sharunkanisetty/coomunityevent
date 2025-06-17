@@ -1,0 +1,174 @@
+/* Events List Page Styles */
+.events-container {
+    padding: 2rem 0;
+}
+
+.event-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.event-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card .card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.event-card .card-subtitle {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.event-card .card-text {
+    color: #495057;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.event-card .badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.8em;
+}
+
+.event-card .location {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.event-card .participants {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Search Form Styles */
+.events-search {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.events-search .form-select,
+.events-search .form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.events-search .btn-primary {
+    padding: 0.5rem 1.5rem;
+}
+
+/* Empty State Styles */
+.no-events {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.no-events i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.no-events h3 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.no-events p {
+    color: #adb5bd;
+}
+
+/* Event Details Page Styles */
+.event-details {
+    padding: 2rem 0;
+}
+
+.event-header {
+    margin-bottom: 2rem;
+}
+
+.event-header h1 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.event-meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.event-description {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.event-sidebar {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.event-sidebar .btn {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.event-sidebar .carbon-footprint {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Event Form Styles */
+.event-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.event-form .form-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.event-form .form-control,
+.event-form .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.event-form .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .event-card {
+        margin-bottom: 1rem;
+    }
+    
+    .events-search {
+        padding: 1rem;
+    }
+    
+    .event-sidebar {
+        margin-top: 2rem;
+    }
+} 

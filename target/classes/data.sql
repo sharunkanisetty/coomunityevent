@@ -10,3 +10,5 @@ VALUES
     ('Community Cleanup', 'Join us for a community cleanup event at the local park.', DATE_ADD(NOW(), INTERVAL 7 DAY), 'Central Park', 'CLEANUP', 1),
     ('Tree Planting', 'Help us plant trees in the neighborhood.', DATE_ADD(NOW(), INTERVAL 14 DAY), 'Community Garden', 'PLANTING', 1),
     ('Environmental Workshop', 'Learn about sustainable living practices.', DATE_ADD(NOW(), INTERVAL 21 DAY), 'Community Center', 'WORKSHOP', 2);
+
+ALTER TABLE carbon_footprints MODIFY COLUMN event_id BIGINT NULL;

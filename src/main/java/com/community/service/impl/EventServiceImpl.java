@@ -86,4 +86,24 @@ public class EventServiceImpl implements EventService {
     public List<Event> findByType(Event.EventType type) {
         return eventRepository.findByEventType(type);
     }
+
+    @Override
+    public List<Event> searchEvents(Event.EventType type, String location) {
+        if (type != null && location != null && !location.trim().isEmpty()) {
+            return eventRepository.findByEventTypeAndLocationContainingIgnoreCase(type, location);
+        } else if (type != null) {
+            return eventRepository.findByEventType(type);
+        } else if (location != null && !location.trim().isEmpty()) {
+            return eventRepository.findByLocationContainingIgnoreCase(location);
+        } else {
+            return getAllEvents();
+        }
+    }
+
+    @Override
+    public boolean isOrganizer(Long eventId, String username) {
+        Event event = getEventById(eventId);
+        return event != null && event.getOrganizer() != null && 
+               event.getOrganizer().getUsername().equals(username);
+    }
 } 

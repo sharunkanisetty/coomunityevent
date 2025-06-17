@@ -16,4 +16,6 @@ public interface EventService {
     void joinEvent(Long eventId, User user);
     void leaveEvent(Long eventId, User user);
     List<Event> findByType(Event.EventType type);
+    List<Event> searchEvents(Event.EventType type, String location);
+    boolean isOrganizer(Long eventId, String username);
 } 
