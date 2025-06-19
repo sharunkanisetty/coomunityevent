@@ -76,9 +76,7 @@ public class EventWebController {
             logger.info("[CONTROLLER] Saved event ID: {}", savedEvent.getId());
             
             redirectAttributes.addFlashAttribute("successMessage", "Event created successfully!");
-            String redirectUrl = "redirect:/events/" + savedEvent.getUuid();
-            logger.info("[CONTROLLER] Redirecting to: {}", redirectUrl);
-            return redirectUrl;
+            return "redirect:/events";
         } catch (Exception e) {
             logger.error("[CONTROLLER] Error creating event: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating event: " + e.getMessage());
