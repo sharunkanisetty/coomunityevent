@@ -19,4 +19,6 @@ public interface UserService {
     Double getTotalVolunteerHours(Long userId);
     void updatePassword(Long userId, String newPassword);
     User updateUser(Long id, User user);
+    void addVolunteerHours(Long userId, Long eventId, Integer hours);
+    int getTotalParticipationHours(Long userId);
 } 

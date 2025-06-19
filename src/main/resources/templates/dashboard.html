@@ -28,6 +28,10 @@
                                     <span class="badge bg-success rounded-pill" th:text="${totalVolunteerHours}">0</span>
                                 </div>
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Participation Hours
+                                    <span class="badge bg-secondary rounded-pill" th:text="${totalParticipationHours}">0</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
                                     Badges
                                     <span class="badge bg-info rounded-pill" th:text="${badges.size()}">0</span>
                                 </div>
@@ -94,8 +98,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Add activity rows here when implementing activity tracking -->
-                                        <tr>
+                                        <tr th:each="event : ${recentEvents}">
+                                            <td th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</td>
+                                            <td th:text="${event.title}">Event Title</td>
+                                            <td>
+                                                <span th:if="${event.participants.contains(user)}" th:text="${event.participantReward}">0</span>
+                                                <span th:if="${event.volunteers.contains(user)}" th:text="${event.volunteerReward}">0</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(recentEvents)}">
                                             <td colspan="3" class="text-center text-muted">No recent activity</td>
                                         </tr>
                                     </tbody>

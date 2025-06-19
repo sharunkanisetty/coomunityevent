@@ -28,4 +28,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findNearbyEvents(@Param("latMin") double latMin, @Param("latMax") double latMax, @Param("lonMin") double lonMin, @Param("lonMax") double lonMax);
 
     Optional<Event> findByUuid(UUID uuid);
+
+    List<Event> findByDateBeforeAndProcessedFalse(LocalDateTime date);
 } 

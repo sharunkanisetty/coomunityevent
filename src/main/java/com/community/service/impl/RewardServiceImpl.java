@@ -26,7 +26,14 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public List<Reward> getAvailableRewards() {
-        return rewardRepository.findByIsActiveTrueAndStockQuantityGreaterThan(0);
+        List<Reward> rewards = rewardRepository.findByIsActiveTrueAndStockQuantityGreaterThan(0);
+        // Deduplicate by reward id
+        List<Reward> deduped = rewards.stream().collect(java.util.stream.Collectors.collectingAndThen(
+            java.util.stream.Collectors.toMap(Reward::getId, r -> r, (r1, r2) -> r1),
+            m -> new java.util.ArrayList<>(m.values())
+        ));
+        // Limit to first four rewards
+        return deduped.stream().limit(4).toList();
     }
 
     @Override
@@ -36,15 +43,26 @@ public class RewardServiceImpl implements RewardService {
         if (reward == null || !reward.getIsActive() || reward.getStockQuantity() <= 0) return false;
         if (user.getPoints() < reward.getPointsCost()) return false;
 
+        int pointsBefore = user.getPoints();
+
         user.setPoints(user.getPoints() - reward.getPointsCost());
         reward.setStockQuantity(reward.getStockQuantity() - 1);
         userRepository.save(user);
         rewardRepository.save(reward);
 
+        int pointsAfter = user.getPoints();
+
         RedeemReward rr = new RedeemReward();
         rr.setUser(user);
         rr.setReward(reward);
-        rr.setRewardCode(UUID.randomUUID().toString().substring(0,8).toUpperCase());
+        rr.setRewardName(reward.getRewardName());
+        rr.setPointsCost(reward.getPointsCost());
+        rr.setDescription(reward.getDescription());
+        rr.setRedeemDate(java.time.LocalDateTime.now());
+        rr.setStatus(com.community.model.RedeemReward.RewardStatus.REDEEMED);
+        rr.setRewardCode(java.util.UUID.randomUUID().toString().substring(0,8).toUpperCase());
+        rr.setPointsBefore(pointsBefore);
+        rr.setPointsAfter(pointsAfter);
         redeemRewardRepository.save(rr);
 
         return true;
@@ -52,6 +70,6 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public List<RedeemReward> getUserRedeemedRewards(User user) {
-        return redeemRewardRepository.findByUser(user);
+        return redeemRewardRepository.findByUserOrderByRedeemDateDesc(user);
     }
 } 

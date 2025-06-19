@@ -67,7 +67,6 @@ public class User {
     private Set<Badge> badges = new HashSet<>();
 
     @Transient
-    @NotBlank(message = "Please confirm your password")
     private String confirmPassword;
 
     @ElementCollection(fetch = FetchType.EAGER)

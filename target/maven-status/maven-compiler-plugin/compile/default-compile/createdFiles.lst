@@ -50,6 +50,7 @@ com/community/controller/BadgeController.class
 com/community/controller/HomeController.class
 com/community/service/impl/CustomUserDetailsService.class
 com/community/controller/web/RewardsWebController.class
+com/community/service/impl/EventProcessingService.class
 com/community/CommunityEventsApplication.class
 com/community/service/CarbonFootprintService.class
 com/community/service/impl/ForumServiceImpl.class

@@ -19,6 +19,7 @@
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/RewardService.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/model/Badge.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/DashboardController.java
+/home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/impl/EventProcessingService.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/repository/EventRepository.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/CommunityEventsApplication.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/model/RedeemReward.java

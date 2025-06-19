@@ -75,6 +75,9 @@ public class Event {
     @Column(name = "volunteer_reward")
     private String volunteerReward;
 
+    @Column(name = "processed", nullable = false)
+    private boolean processed = false;
+
     @PrePersist
     public void ensureUuid() {
         if (uuid == null) {

@@ -35,6 +35,12 @@ public class RedeemReward {
 
     private String rewardCode;
 
+    @Column(name = "points_before")
+    private Integer pointsBefore;
+
+    @Column(name = "points_after")
+    private Integer pointsAfter;
+
     public enum RewardStatus {
         PENDING,
         APPROVED,

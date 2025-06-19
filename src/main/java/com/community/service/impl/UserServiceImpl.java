@@ -3,8 +3,11 @@ package com.community.service.impl;
 import com.community.model.User;
 import com.community.model.Badge;
 import com.community.model.VolunteerHours;
+import com.community.model.Event;
 import com.community.repository.UserRepository;
 import com.community.repository.BadgeRepository;
+import com.community.repository.VolunteerHoursRepository;
+import com.community.repository.EventRepository;
 import com.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VolunteerHoursRepository volunteerHoursRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public List<User> findTopContributors() {
@@ -134,5 +139,27 @@ public class UserServiceImpl implements UserService {
         }
         
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    public void addVolunteerHours(Long userId, Long eventId, Integer hours) {
+        User user = findById(userId);
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
+        VolunteerHours vh = new VolunteerHours();
+        vh.setUser(user);
+        vh.setEvent(event);
+        vh.setCheckInTime(event.getDate());
+        vh.setHoursLogged(hours.doubleValue());
+        vh.setVerified(true);
+        volunteerHoursRepository.save(vh);
+    }
+
+    @Override
+    public int getTotalParticipationHours(Long userId) {
+        User user = findById(userId);
+        return user.getParticipatedEvents().stream()
+                .filter(e -> e.getDurationInHours() != null)
+                .mapToInt(Event::getDurationInHours)
+                .sum();
     }
 } 
