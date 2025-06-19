@@ -159,6 +159,8 @@ public class EventWebController {
             User user = userService.findByUsername(auth.getName());
             eventService.joinEvent(uuid, user);
             redirectAttributes.addFlashAttribute("successMessage", "Successfully joined the event!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error joining event: " + e.getMessage());
         }
@@ -187,6 +189,8 @@ public class EventWebController {
             User user = userService.findByUsername(auth.getName());
             eventService.joinAsVolunteer(uuid, user);
             redirectAttributes.addFlashAttribute("successMessage", "Successfully registered as a volunteer!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error registering as volunteer: " + e.getMessage());
         }

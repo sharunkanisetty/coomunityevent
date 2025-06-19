@@ -112,6 +112,10 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void joinEvent(UUID eventUuid, User user) {
         Event event = getEventById(eventUuid);
+        // Restrict if already a volunteer
+        if (event.getVolunteers().contains(user)) {
+            throw new IllegalStateException("You are already registered as a volunteer for this event and cannot register as a participant as well.");
+        }
         if (event.getMaxParticipants() != null
                 && event.getParticipants().size() < event.getMaxParticipants()
                 && !event.getParticipants().contains(user)) {
@@ -161,6 +165,10 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void joinAsVolunteer(UUID eventUuid, User user) {
         Event event = getEventById(eventUuid);
+        // Restrict if already a participant
+        if (event.getParticipants().contains(user)) {
+            throw new IllegalStateException("You are already registered as a participant for this event and cannot register as a volunteer as well.");
+        }
         if (event.getVolunteersRequired() != null
                 && event.getVolunteers().size() < event.getVolunteersRequired()
                 && !event.getVolunteers().contains(user)) {
