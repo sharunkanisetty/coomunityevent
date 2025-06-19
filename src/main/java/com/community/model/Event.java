@@ -5,6 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -46,13 +47,40 @@ public class Event {
     @JoinColumn(name = "organizer_id")
     private User organizer;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "event_participants",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> participants = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "event_volunteers",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> volunteers = new HashSet<>();
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID uuid;
+
+    @Column(name = "volunteers_required")
+    private Integer volunteersRequired;
+
+    @Column(name = "participant_reward")
+    private String participantReward;
+
+    @Column(name = "volunteer_reward")
+    private String volunteerReward;
+
+    @PrePersist
+    public void ensureUuid() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+    }
 
     public enum EventType {
         CLEANUP,

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::content})}">
-<head>
-    <title>Carbon Footprint History</title>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<head th:fragment="head">
+    <title id="pageTitle">Carbon Footprint History</title>
 </head>
 <body>
-    <div th:fragment="content">
+    <div id="content">
         <div class="container mt-4">
             <h2>Carbon Footprint History</h2>
             

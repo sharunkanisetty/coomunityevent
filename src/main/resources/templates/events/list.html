@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/base :: html}">
-<head>
-    <title id="pageTitle">Events</title>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<head th:fragment="head">
+    <title id="pageTitle">Events List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/events.css}">
     <style>
@@ -105,6 +103,18 @@
                                 <i class="bi bi-geo-alt"></i>
                                 <span th:text="${event.location}">Location</span>
                             </div>
+                            <div class="mb-2">
+                                <i class="bi bi-clock"></i>
+                                <span th:text="${event.durationInHours != null ? event.durationInHours + ' hours' : 'N/A'}">Duration</span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="bi bi-gift"></i>
+                                <span><strong>Participant Reward:</strong> <span th:text="${event.participantReward != null ? event.participantReward : 'None'}">None</span></span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="bi bi-gift"></i>
+                                <span><strong>Volunteer Reward:</strong> <span th:text="${event.volunteerReward != null ? event.volunteerReward : 'None'}">None</span></span>
+                            </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-primary" th:text="${event.eventType}">Type</span>
                                 <div class="participants">
@@ -114,8 +124,18 @@
                                           th:text="${'/' + event.maxParticipants}"></span>
                                 </div>
                             </div>
-                            <a th:href="@{/events/{id}(id=${event.id})}" 
-                               class="btn btn-outline-primary btn-sm mt-3 w-100">View Details</a>
+                            <form th:action="@{/events/{uuid}/join(uuid=${event.uuid})}"
+                                  method="post"
+                                  sec:authorize="isAuthenticated()"
+                                  th:if="${event.participants.size() < event.maxParticipants} and ${#authentication.principal != null} and ${event.participants.?[username == #authentication.principal.username].isEmpty()}">
+                                <button type="submit" class="btn btn-primary btn-sm mt-3 w-100">Register</button>
+                            </form>
+                            <div sec:authorize="isAuthenticated()" th:if="${event.participants.?[username == #authentication.principal.username].size() > 0}" class="text-info fw-bold mt-2">
+                                You have already registered for this event.
+                            </div>
+                            <div th:if="${event.participants.size() >= event.maxParticipants}" class="text-success fw-bold mt-2">
+                                Participant slots filled
+                            </div>
                         </div>
                     </div>
                 </div>

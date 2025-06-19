@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<head th:fragment="head">
+    <title id="pageTitle">Volunteer Opportunities</title>
+</head>
+<body>
+    <div id="content">
+        <div class="container">
+            <h1 class="display-4">Volunteer Opportunities</h1>
+            <div th:if="${#lists.isEmpty(events)}">
+                <p>No volunteer opportunities are currently available.</p>
+            </div>
+            <div class="row" th:if="${not #lists.isEmpty(events)}">
+                <div class="col-md-4 mb-4" th:each="event : ${events}">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                            <p class="card-text" th:text="${event.description}">Description</p>
+                            <p class="card-text">
+                                <strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</span><br>
+                                <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
+                                <strong>Volunteers Needed:</strong> <span th:text="${event.volunteersRequired}"></span><br>
+                                <strong>Current Volunteers:</strong> <span th:text="${event.volunteers.size()}"></span><br>
+                                <div class="mb-2">
+                                    <i class="bi bi-clock"></i>
+                                    <span th:text="${event.durationInHours != null ? event.durationInHours + ' hours' : 'N/A'}">Duration</span>
+                                </div>
+                                <div class="mb-2">
+                                    <i class="bi bi-gift"></i>
+                                    <span><strong>Participant Reward:</strong> <span th:text="${event.participantReward != null ? event.participantReward : 'None'}">None</span></span>
+                                </div>
+                                <div class="mb-2">
+                                    <i class="bi bi-gift"></i>
+                                    <span><strong>Volunteer Reward:</strong> <span th:text="${event.volunteerReward != null ? event.volunteerReward : 'None'}">None</span></span>
+                                </div>
+                            </p>
+                            <form th:action="@{/events/{uuid}/volunteer(uuid=${event.uuid})}"
+                                  method="post"
+                                  th:if="${event.volunteers.size() < event.volunteersRequired} and ${#authentication.principal != null} and ${event.volunteers.?[username == #authentication.principal.username].isEmpty()}">
+                                <button type="submit" class="btn btn-primary">Register as Volunteer</button>
+                            </form>
+                            <div th:if="${event.volunteers.?[username == #authentication.principal.username].size() > 0}" class="text-info fw-bold mt-2">
+                                You have already registered as a volunteer for this event.
+                            </div>
+                            <div th:if="${event.volunteers.size() >= event.volunteersRequired}" class="text-success fw-bold mt-2">
+                                Volunteer slots filled
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

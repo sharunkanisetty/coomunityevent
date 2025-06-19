@@ -75,6 +75,9 @@ public class User {
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
 
+    @ManyToMany(mappedBy = "volunteers", fetch = FetchType.EAGER)
+    private Set<Event> volunteeredEvents = new HashSet<>();
+
     public enum Role {
         USER,
         ADMIN
@@ -83,5 +86,18 @@ public class User {
     // Helper method to check if passwords match
     public boolean isPasswordConfirmed() {
         return password != null && password.equals(confirmPassword);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id != null && id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 } 

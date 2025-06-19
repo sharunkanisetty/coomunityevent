@@ -1,61 +1,101 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
-<head>
-    <title id="pageTitle">Home</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<th:block id="pageTitle">Home</th:block>
 <body>
-    <div id="content">
-        <div class="jumbotron bg-light p-5 rounded-3">
-            <h1 class="display-4">Welcome to Community Events</h1>
-            <p class="lead">Join us in making our community a better place through volunteering and participation.</p>
-            <hr class="my-4">
-            <p>Discover upcoming events, join activities, and connect with fellow community members.</p>
-            <a class="btn btn-primary btn-lg" th:href="@{/events}" role="button">Browse Events</a>
+    <div id="content" th:fragment="content">
+        <div class="hero-section text-center py-5">
+            <h1 class="display-4 mb-4">Welcome to Community Events</h1>
+            <p class="lead mb-4">Join local events, make a difference, and earn rewards while helping your community.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a th:href="@{/events}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-event"></i> Browse Events
+                </a>
+                <a th:href="@{/volunteer}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-heart"></i> Volunteer Opportunities
+                </a>
+            </div>
         </div>
 
         <div class="row mt-5">
-            <div class="col-md-8">
-                <h2>Upcoming Events</h2>
-                <div class="row">
-                    <div class="col-md-6 mb-4" th:each="event : ${upcomingEvents}">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${event.title}">Event Title</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="bi bi-calendar"></i>
-                                    <span th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                </h6>
-                                <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-primary" th:text="${event.eventType}">Type</span>
-                                    <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-outline-primary btn-sm">View Details</a>
-                                </div>
-                            </div>
-                        </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check display-4 text-primary mb-3"></i>
+                        <h5 class="card-title">Join Events</h5>
+                        <p class="card-text">Discover and participate in local community events. From cleanups to fundraisers, there's something for everyone.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Quick Links</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <a th:href="@{/events/new}" class="text-decoration-none">
-                                    <i class="bi bi-plus-circle"></i> Create New Event
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a th:href="@{/dashboard}" class="text-decoration-none">
-                                    <i class="bi bi-speedometer2"></i> My Dashboard
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a th:href="@{/profile}" class="text-decoration-none">
-                                    <i class="bi bi-person"></i> My Profile
-                                </a>
-                            </li>
-                        </ul>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-leaf display-4 text-success mb-3"></i>
+                        <h5 class="card-title">Track Impact</h5>
+                        <p class="card-text">Monitor your carbon footprint impact and see how your participation contributes to environmental sustainability.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-gift display-4 text-warning mb-3"></i>
+                        <h5 class="card-title">Earn Rewards</h5>
+                        <p class="card-text">Earn points for your participation and redeem them for rewards from local businesses and organizations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5" sec:authorize="!isAuthenticated()">
+            <div class="col-12 text-center">
+                <h3>Ready to get started?</h3>
+                <p class="lead">Create an account to start participating in community events.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a th:href="@{/register}" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </a>
+                    <a th:href="@{/login}" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volunteer Opportunities Section -->
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Volunteer Opportunities</h5>
+                            <div th:if="${#lists.isEmpty(volunteerOpportunities)}">
+                                <p>No volunteer opportunities are currently available.</p>
+                            </div>
+                            <div class="row" th:if="${not #lists.isEmpty(volunteerOpportunities)}">
+                                <div class="col-md-4 mb-4" th:each="event : ${volunteerOpportunities}">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                                            <p class="card-text" th:text="${event.description}">Description</p>
+                                            <p class="card-text">
+                                                <strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</span><br>
+                                                <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
+                                                <strong>Volunteers Needed:</strong> <span th:text="${event.volunteersRequired}">0</span><br>
+                                                <strong>Current Volunteers:</strong> <span th:text="${event.volunteers.size()}">0</span><br>
+                                                <strong>Reward for Volunteers:</strong> <span th:text="${event.volunteerReward}">None</span><br>
+                                                <strong>Reward for Participants:</strong> <span th:text="${event.participantReward}">None</span>
+                                            </p>
+                                            <form th:action="@{/events/{uuid}/volunteer(uuid=${event.uuid})}" method="post" th:if="${event.volunteers.size() < event.volunteersRequired}">
+                                                <button type="submit" class="btn btn-primary">Register as Volunteer</button>
+                                            </form>
+                                            <div th:if="${event.volunteers.size() >= event.volunteersRequired}" class="text-success fw-bold mt-2">
+                                                Volunteer slots filled
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

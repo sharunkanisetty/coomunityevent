@@ -8,6 +8,7 @@ com/community/repository/BadgeRepository.class
 com/community/exception/GlobalExceptionHandler.class
 com/community/controller/web/CarbonFootprintWebController.class
 com/community/model/Event.class
+com/community/controller/MyEventsController.class
 com/community/controller/EventController.class
 com/community/model/Badge$BadgeType.class
 com/community/exception/ResourceNotFoundException.class
@@ -38,6 +39,7 @@ com/community/repository/RewardRepository.class
 com/community/service/UserService.class
 com/community/service/impl/RedeemRewardServiceImpl.class
 com/community/repository/VolunteerHoursRepository.class
+com/community/controller/VolunteerController.class
 com/community/repository/RedeemRewardRepository.class
 com/community/model/Badge.class
 com/community/service/impl/UserServiceImpl.class

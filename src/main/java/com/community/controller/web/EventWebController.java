@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/events")
@@ -60,49 +61,65 @@ public class EventWebController {
     @PreAuthorize("isAuthenticated()")
     public String createEvent(@ModelAttribute Event event, RedirectAttributes redirectAttributes) {
         try {
+            logger.info("[CONTROLLER] Starting event creation process");
+            logger.info("[CONTROLLER] Event title: {}", event.getTitle());
+            logger.info("[CONTROLLER] Event UUID before service call: {}", event.getUuid());
+            
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userService.findByUsername(auth.getName());
+            logger.info("[CONTROLLER] Setting organizer: {}", user.getUsername());
             event.setOrganizer(user);
-            eventService.createEvent(event);
+            
+            Event savedEvent = eventService.createEvent(event);
+            logger.info("[CONTROLLER] Event saved successfully");
+            logger.info("[CONTROLLER] Saved event UUID: {}", savedEvent.getUuid());
+            logger.info("[CONTROLLER] Saved event ID: {}", savedEvent.getId());
+            
             redirectAttributes.addFlashAttribute("successMessage", "Event created successfully!");
-            return "redirect:/events";
+            String redirectUrl = "redirect:/events/" + savedEvent.getUuid();
+            logger.info("[CONTROLLER] Redirecting to: {}", redirectUrl);
+            return redirectUrl;
         } catch (Exception e) {
+            logger.error("[CONTROLLER] Error creating event: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating event: " + e.getMessage());
             return "redirect:/events/new";
         }
     }
 
-    @GetMapping("/{id}")
-    public String showEventDetails(@PathVariable Long id, Model model) {
+    @GetMapping("/{uuid}")
+    public String showEventDetails(@PathVariable UUID uuid, Model model) {
         try {
-            Event event = eventService.getEventById(id);
+            logger.info("[CONTROLLER] Loading event details for UUID: {}", uuid);
+            Event event = eventService.getEventById(uuid);
+            logger.info("[CONTROLLER] Event found: {} - {}", uuid, event.getTitle());
             model.addAttribute("event", event);
             
             try {
                 double carbonFootprint = carbonFootprintService.calculateEventFootprint(event);
                 model.addAttribute("carbonFootprint", carbonFootprint);
+                logger.info("[CONTROLLER] Carbon footprint calculated: {}", carbonFootprint);
             } catch (Exception e) {
-                logger.warn("Could not calculate carbon footprint for event {}: {}", id, e.getMessage());
+                logger.warn("[CONTROLLER] Could not calculate carbon footprint for event {}: {}", uuid, e.getMessage());
                 model.addAttribute("carbonFootprint", 0.0);
             }
             
             return "events/details";
         } catch (Exception e) {
-            logger.error("Error loading event details for id {}: {}", id, e.getMessage(), e);
+            logger.error("[CONTROLLER] Error loading event details for uuid {}: {}", uuid, e.getMessage(), e);
             model.addAttribute("errorMessage", "Event not found or an error occurred.");
             return "error";
         }
     }
 
-    @GetMapping("/{id}/edit")
-    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#id, authentication.principal.username))")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Event event = eventService.getEventById(id);
+    @GetMapping("/{uuid}/edit")
+    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#uuid, authentication.principal.username))")
+    public String showEditForm(@PathVariable UUID uuid, Model model) {
+        Event event = eventService.getEventById(uuid);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
         
         if (!event.getOrganizer().equals(user)) {
-            return "redirect:/events/" + id;
+            return "redirect:/events/" + uuid;
         }
         
         model.addAttribute("event", event);
@@ -110,58 +127,86 @@ public class EventWebController {
         return "events/form";
     }
 
-    @PostMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#id, authentication.principal.username))")
-    public String updateEvent(@PathVariable Long id, @ModelAttribute Event event, RedirectAttributes redirectAttributes) {
+    @PostMapping("/{uuid}")
+    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#uuid, authentication.principal.username))")
+    public String updateEvent(@PathVariable UUID uuid, @ModelAttribute Event event, RedirectAttributes redirectAttributes) {
         try {
-            event.setId(id);
+            event.setUuid(uuid);
             eventService.updateEvent(event);
             redirectAttributes.addFlashAttribute("successMessage", "Event updated successfully!");
-            return "redirect:/events/" + id;
+            return "redirect:/events/" + uuid;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error updating event: " + e.getMessage());
-            return "redirect:/events/" + id + "/edit";
+            return "redirect:/events/" + uuid + "/edit";
         }
     }
 
-    @PostMapping("/{id}/delete")
-    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#id, authentication.principal.username))")
-    public String deleteEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/{uuid}/delete")
+    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or @eventService.isOrganizer(#uuid, authentication.principal.username))")
+    public String deleteEvent(@PathVariable UUID uuid, RedirectAttributes redirectAttributes) {
         try {
-            eventService.deleteEvent(id);
+            eventService.deleteEvent(uuid);
             redirectAttributes.addFlashAttribute("successMessage", "Event deleted successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting event: " + e.getMessage());
         }
-        return "redirect:/events";
+        return "redirect:/my-events";
     }
 
-    @PostMapping("/{id}/join")
+    @PostMapping("/{uuid}/join")
     @PreAuthorize("isAuthenticated()")
-    public String joinEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String joinEvent(@PathVariable UUID uuid, RedirectAttributes redirectAttributes) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userService.findByUsername(auth.getName());
-            eventService.joinEvent(id, user);
+            eventService.joinEvent(uuid, user);
             redirectAttributes.addFlashAttribute("successMessage", "Successfully joined the event!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error joining event: " + e.getMessage());
         }
-        return "redirect:/events/" + id;
+        return "redirect:/events";
     }
 
-    @PostMapping("/{id}/leave")
+    @PostMapping("/{uuid}/leave")
     @PreAuthorize("isAuthenticated()")
-    public String leaveEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String leaveEvent(@PathVariable UUID uuid, RedirectAttributes redirectAttributes) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userService.findByUsername(auth.getName());
-            eventService.leaveEvent(id, user);
+            eventService.leaveEvent(uuid, user);
             redirectAttributes.addFlashAttribute("successMessage", "Successfully left the event!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error leaving event: " + e.getMessage());
         }
-        return "redirect:/events/" + id;
+        return "redirect:/my-events";
+    }
+
+    @PostMapping("/{uuid}/volunteer")
+    @PreAuthorize("isAuthenticated()")
+    public String joinAsVolunteer(@PathVariable UUID uuid, RedirectAttributes redirectAttributes) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = userService.findByUsername(auth.getName());
+            eventService.joinAsVolunteer(uuid, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Successfully registered as a volunteer!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error registering as volunteer: " + e.getMessage());
+        }
+        return "redirect:/volunteer";
+    }
+
+    @PostMapping("/{uuid}/volunteer/leave")
+    @PreAuthorize("isAuthenticated()")
+    public String leaveAsVolunteer(@PathVariable UUID uuid, RedirectAttributes redirectAttributes) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = userService.findByUsername(auth.getName());
+            eventService.leaveAsVolunteer(uuid, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Successfully left as a volunteer!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error leaving as volunteer: " + e.getMessage());
+        }
+        return "redirect:/my-events";
     }
 
     @GetMapping("/my-events")

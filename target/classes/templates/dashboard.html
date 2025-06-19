@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
-<head>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<head th:fragment="head">
     <title id="pageTitle">Dashboard</title>
 </head>
 <body>
@@ -100,6 +100,49 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volunteer Opportunities Section -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Volunteer Opportunities</h5>
+                            <div th:if="${#lists.isEmpty(volunteerOpportunities)}">
+                                <p>No volunteer opportunities are currently available.</p>
+                            </div>
+                            <div class="row" th:if="${not #lists.isEmpty(volunteerOpportunities)}">
+                                <div class="col-md-4 mb-4" th:each="event : ${volunteerOpportunities}">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${event.title}">Event Title</h5>
+                                            <p class="card-text" th:text="${event.description}">Description</p>
+                                            <p class="card-text">
+                                                <strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'MMM dd, yyyy HH:mm')}">Date</span><br>
+                                                <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
+                                                <strong>Volunteers Needed:</strong> <span th:text="${event.volunteersRequired}">0</span><br>
+                                                <strong>Current Volunteers:</strong> <span th:text="${event.volunteers.size()}">0</span><br>
+                                                <strong>Reward for Volunteers:</strong> <span th:text="${event.volunteerReward}">None</span><br>
+                                                <strong>Reward for Participants:</strong> <span th:text="${event.participantReward}">None</span>
+                                            </p>
+                                            <form th:action="@{/events/{uuid}/volunteer(uuid=${event.uuid})}"
+                                                  method="post"
+                                                  th:if="${event.volunteers.size() < event.volunteersRequired} and ${#authentication.principal != null} and ${event.volunteers.?[username == #authentication.principal.username].isEmpty()}">
+                                                <button type="submit" class="btn btn-primary">Register as Volunteer</button>
+                                            </form>
+                                            <div th:if="${event.volunteers.?[username == #authentication.principal.username].size() > 0}" class="text-info fw-bold mt-2">
+                                                You have already registered as a volunteer for this event.
+                                            </div>
+                                            <div th:if="${event.volunteers.size() >= event.volunteersRequired}" class="text-success fw-bold mt-2">
+                                                Volunteer slots filled
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

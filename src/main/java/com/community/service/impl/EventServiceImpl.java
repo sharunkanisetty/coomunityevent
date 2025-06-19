@@ -5,15 +5,19 @@ import com.community.model.User;
 import com.community.repository.EventRepository;
 import com.community.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
-@Service
+@Service("eventService")
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+    private static final Logger logger = LoggerFactory.getLogger(EventServiceImpl.class);
     private final EventRepository eventRepository;
 
     @Override
@@ -22,19 +26,56 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEventById(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+    public Event getEventById(UUID uuid) {
+        logger.info("[SERVICE] Looking for event with UUID: {}", uuid);
+        try {
+            Event event = eventRepository.findByUuid(uuid)
+                    .orElseThrow(() -> new RuntimeException("Event not found"));
+            logger.info("[SERVICE] Found event: {} with title: {}", uuid, event.getTitle());
+            return event;
+        } catch (Exception e) {
+            logger.error("[SERVICE] Event not found for UUID: {}", uuid);
+            throw e;
+        }
     }
 
     @Override
     public Event createEvent(Event event) {
-        return eventRepository.save(event);
+        logger.info("[SERVICE] Starting event creation for title: {}", event.getTitle());
+        logger.info("[SERVICE] Event UUID before processing: {}", event.getUuid());
+        
+        if (event.getUuid() == null) {
+            event.setUuid(UUID.randomUUID());
+            logger.info("[SERVICE] Generated new UUID: {}", event.getUuid());
+        }
+        
+        try {
+            Event savedEvent = eventRepository.save(event);
+            logger.info("[SERVICE] Event saved successfully with UUID: {}", savedEvent.getUuid());
+            logger.info("[SERVICE] Saved event ID: {}", savedEvent.getId());
+            
+            // Verify the event can be retrieved immediately after saving
+            try {
+                Event retrievedEvent = eventRepository.findByUuid(savedEvent.getUuid()).orElse(null);
+                if (retrievedEvent != null) {
+                    logger.info("[SERVICE] Event verification successful - found in database: {}", retrievedEvent.getTitle());
+                } else {
+                    logger.error("[SERVICE] Event verification failed - event not found in database after save!");
+                }
+            } catch (Exception e) {
+                logger.error("[SERVICE] Error during event verification: {}", e.getMessage());
+            }
+            
+            return savedEvent;
+        } catch (Exception e) {
+            logger.error("[SERVICE] Error saving event: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
     public Event updateEvent(Event event) {
-        Event existingEvent = getEventById(event.getId());
+        Event existingEvent = getEventById(event.getUuid());
         existingEvent.setTitle(event.getTitle());
         existingEvent.setDescription(event.getDescription());
         existingEvent.setDate(event.getDate());
@@ -47,8 +88,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void deleteEvent(Long id) {
-        eventRepository.deleteById(id);
+    public void deleteEvent(UUID uuid) {
+        Event event = getEventById(uuid);
+        eventRepository.delete(event);
     }
 
     @Override
@@ -68,16 +110,24 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public void joinEvent(Long eventId, User user) {
-        Event event = getEventById(eventId);
-        event.getParticipants().add(user);
-        eventRepository.save(event);
+    public void joinEvent(UUID eventUuid, User user) {
+        Event event = getEventById(eventUuid);
+        if (event.getMaxParticipants() != null
+                && event.getParticipants().size() < event.getMaxParticipants()
+                && !event.getParticipants().contains(user)) {
+            event.getParticipants().add(user);
+            eventRepository.save(event);
+        } else if (event.getParticipants().contains(user)) {
+            logger.warn("[SERVICE] User {} already joined event: {} (UUID: {})", user.getUsername(), event.getTitle(), eventUuid);
+        } else {
+            logger.warn("[SERVICE] Attempt to join full event: {} (UUID: {})", event.getTitle(), eventUuid);
+        }
     }
 
     @Override
     @Transactional
-    public void leaveEvent(Long eventId, User user) {
-        Event event = getEventById(eventId);
+    public void leaveEvent(UUID eventUuid, User user) {
+        Event event = getEventById(eventUuid);
         event.getParticipants().remove(user);
         eventRepository.save(event);
     }
@@ -101,9 +151,47 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean isOrganizer(Long eventId, String username) {
-        Event event = getEventById(eventId);
+    public boolean isOrganizer(UUID eventUuid, String username) {
+        Event event = getEventById(eventUuid);
         return event != null && event.getOrganizer() != null && 
                event.getOrganizer().getUsername().equals(username);
+    }
+
+    @Override
+    @Transactional
+    public void joinAsVolunteer(UUID eventUuid, User user) {
+        Event event = getEventById(eventUuid);
+        if (event.getVolunteersRequired() != null
+                && event.getVolunteers().size() < event.getVolunteersRequired()
+                && !event.getVolunteers().contains(user)) {
+            event.getVolunteers().add(user);
+            eventRepository.save(event);
+        } else if (event.getVolunteers().contains(user)) {
+            logger.warn("[SERVICE] User {} already registered as volunteer for event: {} (UUID: {})", user.getUsername(), event.getTitle(), eventUuid);
+        } else {
+            logger.warn("[SERVICE] Attempt to join full volunteer slots for event: {} (UUID: {})", event.getTitle(), eventUuid);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void leaveAsVolunteer(UUID eventUuid, User user) {
+        Event event = getEventById(eventUuid);
+        event.getVolunteers().remove(user);
+        eventRepository.save(event);
+    }
+
+    // Debug method to check database schema
+    public void debugDatabaseSchema() {
+        try {
+            List<Event> allEvents = eventRepository.findAll();
+            logger.info("[DEBUG] Total events in database: {}", allEvents.size());
+            for (Event event : allEvents) {
+                logger.info("[DEBUG] Event ID: {}, UUID: {}, Title: {}", 
+                    event.getId(), event.getUuid(), event.getTitle());
+            }
+        } catch (Exception e) {
+            logger.error("[DEBUG] Error checking database schema: {}", e.getMessage(), e);
+        }
     }
 } 

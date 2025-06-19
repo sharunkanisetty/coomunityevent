@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/base :: html}">
-<head>
-    <title id="pageTitle">Create Event</title>
+<html xmlns:th="http://www.thymeleaf.org" th:insert="~{layout/base :: html}">
+<head th:fragment="head">
+    <title id="pageTitle">Event Form</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/events.css}">
     <style>
@@ -57,15 +55,17 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1 class="display-5 fw-bold" th:text="${event.id == null ? 'Create Event' : 'Edit Event'}">Create Event</h1>
+                        <h1 class="display-5 fw-bold" th:text="${event.uuid == null ? 'Create Event' : 'Edit Event'}">Create Event</h1>
                     </div>
 
-                    <form th:action="${event.id == null ? '/events' : '/events/' + event.id}"
+                    <form th:action="${event.uuid == null} ? @{/events} : @{/events/{uuid}(uuid=${event.uuid})}"
                           th:object="${event}"
                           method="post"
                           class="needs-validation"
                           novalidate>
                         
+                        <!-- UUID is handled by the controller from path variable -->
+
                         <div class="mb-3">
                             <label for="title" class="form-label">Event Title</label>
                             <input type="text"
@@ -165,10 +165,39 @@
                             <div class="invalid-feedback">Please provide the event duration in hours.</div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="volunteersRequired" class="form-label">Number of Volunteers Required</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="volunteersRequired"
+                                   th:field="*{volunteersRequired}"
+                                   min="1"
+                                   required>
+                            <div class="invalid-feedback">Please specify the number of volunteers required.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="participantReward" class="form-label">Reward for Participants</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="participantReward"
+                                   th:field="*{participantReward}">
+                            <div class="form-text">Optional. Describe the reward for event participants.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="volunteerReward" class="form-label">Reward for Volunteers</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="volunteerReward"
+                                   th:field="*{volunteerReward}">
+                            <div class="form-text">Optional. Describe the reward for volunteers.</div>
+                        </div>
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i>
-                                <span th:text="${event.id == null ? 'Create Event' : 'Update Event'}">Create Event</span>
+                                <span th:text="${event.uuid == null ? 'Create Event' : 'Update Event'}">Create Event</span>
                             </button>
                             <a th:href="@{/events}" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Cancel

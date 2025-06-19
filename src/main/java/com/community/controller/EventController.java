@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/events")
@@ -25,9 +26,9 @@ public class EventController {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getEvent(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getEventById(id));
+    @GetMapping("/{uuid}")
+    public ResponseEntity<Event> getEvent(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(eventService.getEventById(uuid));
     }
 
     @PostMapping
@@ -38,31 +39,27 @@ public class EventController {
         return ResponseEntity.ok(eventService.createEvent(event));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        event.setId(id);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<Event> updateEvent(@PathVariable UUID uuid, @RequestBody Event event) {
+        event.setUuid(uuid);
         return ResponseEntity.ok(eventService.updateEvent(event));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID uuid) {
+        eventService.deleteEvent(uuid);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/join")
-    public ResponseEntity<Void> joinEvent(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findByUsername(auth.getName());
-        eventService.joinEvent(id, user);
+    @PostMapping("/{uuid}/join")
+    public ResponseEntity<Void> joinEvent(@PathVariable UUID uuid, @RequestBody User user) {
+        eventService.joinEvent(uuid, user);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/leave")
-    public ResponseEntity<Void> leaveEvent(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findByUsername(auth.getName());
-        eventService.leaveEvent(id, user);
+    @PostMapping("/{uuid}/leave")
+    public ResponseEntity<Void> leaveEvent(@PathVariable UUID uuid, @RequestBody User user) {
+        eventService.leaveEvent(uuid, user);
         return ResponseEntity.ok().build();
     }
 

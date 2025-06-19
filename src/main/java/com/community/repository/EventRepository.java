@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -24,4 +26,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.latitude BETWEEN :latMin AND :latMax AND e.longitude BETWEEN :lonMin AND :lonMax")
     List<Event> findNearbyEvents(@Param("latMin") double latMin, @Param("latMax") double latMax, @Param("lonMin") double lonMin, @Param("lonMax") double lonMax);
+
+    Optional<Event> findByUuid(UUID uuid);
 } 
