@@ -21,4 +21,5 @@ public interface UserService {
     User updateUser(Long id, User user);
     void addVolunteerHours(Long userId, Long eventId, Integer hours);
     int getTotalParticipationHours(Long userId);
+    List<User> findAll();
 } 

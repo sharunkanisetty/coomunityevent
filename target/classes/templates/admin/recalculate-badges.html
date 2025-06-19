@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recalculate Badges (Admin)</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Recalculate Badges for All Users</h2>
+    <form th:action="@{/admin/recalculate-badges}" method="post" class="mb-3">
+        <button type="submit" class="btn btn-warning">Recalculate Badges</button>
+    </form>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+</div>
+</body>
+</html> 

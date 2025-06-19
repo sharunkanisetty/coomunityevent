@@ -1,5 +1,6 @@
 com/community/controller/WebController.class
 com/community/security/CustomUserDetails.class
+com/community/controller/web/AdminBadgeController.class
 com/community/model/RedeemReward.class
 com/community/service/RewardService.class
 com/community/repository/UserRepository.class

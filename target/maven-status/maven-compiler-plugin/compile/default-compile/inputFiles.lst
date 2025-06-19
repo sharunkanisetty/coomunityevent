@@ -46,6 +46,7 @@
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/CarbonFootprintService.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/model/CarbonFootprint.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/repository/BadgeRepository.java
+/home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/web/AdminBadgeController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/CarbonFootprintController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/VolunteerController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/ForumService.java

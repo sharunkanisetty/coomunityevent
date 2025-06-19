@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Award Badge (Admin)</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Award Badge to User</h2>
+    <form th:action="@{/admin/award-badge}" method="post" class="mb-3">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="badgeName" class="form-label">Badge Name</label>
+            <input type="text" class="form-control" id="badgeName" name="badgeName" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Award Badge</button>
+    </form>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+</div>
+</body>
+</html> 

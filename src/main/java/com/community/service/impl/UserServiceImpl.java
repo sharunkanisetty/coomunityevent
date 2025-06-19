@@ -162,4 +162,9 @@ public class UserServiceImpl implements UserService {
                 .mapToInt(Event::getDurationInHours)
                 .sum();
     }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 } 

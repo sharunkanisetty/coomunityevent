@@ -79,8 +79,11 @@ public class BadgeService {
                 .anyMatch(badge -> badge.getName().equals(badgeName));
     }
 
-    private void awardBadge(User user, String name, String description, 
+    public boolean awardBadge(User user, String name, String description, 
                           String icon, String color, Badge.BadgeType type) {
+        if (hasBadgeOfType(user, name)) {
+            return false;
+        }
         Badge badge = new Badge();
         badge.setUser(user);
         badge.setName(name);
@@ -90,5 +93,6 @@ public class BadgeService {
         badge.setType(type);
         badge.setEarnedDate(LocalDateTime.now());
         badgeRepository.save(badge);
+        return true;
     }
 } 
