@@ -1,6 +1,7 @@
 com/community/controller/WebController.class
 com/community/security/CustomUserDetails.class
 com/community/model/RedeemReward.class
+com/community/service/RewardService.class
 com/community/repository/UserRepository.class
 com/community/dto/ApiResponse.class
 com/community/model/CarbonFootprint.class
@@ -27,6 +28,7 @@ com/community/model/Event$EventType.class
 com/community/service/EventService.class
 com/community/controller/CarbonFootprintController.class
 com/community/repository/CarbonFootprintRepository.class
+com/community/service/impl/RewardServiceImpl.class
 com/community/model/VolunteerHours.class
 com/community/model/Reward.class
 com/community/model/RedeemReward$RewardStatus.class

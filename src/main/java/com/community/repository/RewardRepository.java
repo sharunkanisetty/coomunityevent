@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface RewardRepository extends JpaRepository<Reward, Long> {
     List<Reward> findByIsActiveTrue();
-    List<Reward> findByIsActiveTrueAndStockQuantityGreaterThan(Integer quantity);
+    List<Reward> findByIsActiveTrueAndStockQuantityGreaterThan(int minStock);
 } 

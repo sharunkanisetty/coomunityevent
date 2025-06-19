@@ -1,37 +1,36 @@
 package com.community.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
 @Entity
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Table(name = "rewards")
 public class Reward {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "reward_name", nullable = false)
     private String rewardName;
 
-    @Column(length = 1000)
+    @Column(name = "description", length = 1000)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "points_cost", nullable = false)
     private Integer pointsCost;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    @Column(nullable = false)
+    @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-    @Column(length = 100)
+    @Column(name = "image_url", length = 100)
     private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RewardType rewardType;
+    @Column(name = "reward_type", nullable = false)
+    private String rewardType;
 
     public enum RewardType {
         GIFT_CARD,

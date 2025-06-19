@@ -1,11 +1,11 @@
 package com.community.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @Table(name = "redeem_rewards")
 public class RedeemReward {
     @Id
@@ -16,6 +16,9 @@ public class RedeemReward {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    private Reward reward;
+
     @Column(nullable = false)
     private String rewardName;
 
@@ -25,7 +28,7 @@ public class RedeemReward {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime redeemDate;
+    private LocalDateTime redeemDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private RewardStatus status;
@@ -41,7 +44,6 @@ public class RedeemReward {
 
     @PrePersist
     protected void onCreate() {
-        redeemDate = LocalDateTime.now();
-        status = RewardStatus.PENDING;
+        status = RewardStatus.REDEEMED;
     }
 } 

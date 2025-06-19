@@ -40,7 +40,7 @@ public class User {
     private String profilePicture;
 
     @Column(nullable = false)
-    private Integer points = 0;
+    private Integer points = 50;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

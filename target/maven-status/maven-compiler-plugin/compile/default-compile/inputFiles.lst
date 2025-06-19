@@ -16,6 +16,7 @@
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/impl/RedeemRewardServiceImpl.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/repository/VolunteerHoursRepository.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/BadgeService.java
+/home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/RewardService.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/model/Badge.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/DashboardController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/repository/EventRepository.java
@@ -29,6 +30,7 @@
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/exception/ValidationException.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/EventController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/impl/ForumServiceImpl.java
+/home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/impl/RewardServiceImpl.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/WebController.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/service/impl/CustomUserDetailsService.java
 /home/sharun/sprint7/coomunityevent/src/main/java/com/community/controller/UserController.java

@@ -1,0 +1,57 @@
+package com.community.service.impl;
+
+import com.community.model.Reward;
+import com.community.model.RedeemReward;
+import com.community.model.User;
+import com.community.repository.RewardRepository;
+import com.community.repository.RedeemRewardRepository;
+import com.community.repository.UserRepository;
+import com.community.service.RewardService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class RewardServiceImpl implements RewardService {
+    private final RewardRepository rewardRepository;
+    private final RedeemRewardRepository redeemRewardRepository;
+    private final UserRepository userRepository;
+
+    public RewardServiceImpl(RewardRepository rewardRepository, RedeemRewardRepository redeemRewardRepository, UserRepository userRepository) {
+        this.rewardRepository = rewardRepository;
+        this.redeemRewardRepository = redeemRewardRepository;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public List<Reward> getAvailableRewards() {
+        return rewardRepository.findByIsActiveTrueAndStockQuantityGreaterThan(0);
+    }
+
+    @Override
+    @Transactional
+    public boolean redeemReward(User user, Long rewardId) {
+        Reward reward = rewardRepository.findById(rewardId).orElse(null);
+        if (reward == null || !reward.getIsActive() || reward.getStockQuantity() <= 0) return false;
+        if (user.getPoints() < reward.getPointsCost()) return false;
+
+        user.setPoints(user.getPoints() - reward.getPointsCost());
+        reward.setStockQuantity(reward.getStockQuantity() - 1);
+        userRepository.save(user);
+        rewardRepository.save(reward);
+
+        RedeemReward rr = new RedeemReward();
+        rr.setUser(user);
+        rr.setReward(reward);
+        rr.setRewardCode(UUID.randomUUID().toString().substring(0,8).toUpperCase());
+        redeemRewardRepository.save(rr);
+
+        return true;
+    }
+
+    @Override
+    public List<RedeemReward> getUserRedeemedRewards(User user) {
+        return redeemRewardRepository.findByUser(user);
+    }
+} 
